@@ -93,7 +93,7 @@ public class BrokerOuterAPITest {
         when(nettyRemotingClient.invokeSync(anyString(), any(RemotingCommand.class), anyLong())).thenReturn(response);
         List<Boolean> booleanList = brokerOuterAPI.needRegister(clusterName, brokerAddr, brokerName, brokerId, topicConfigSerializeWrapper, timeOut);
         assertTrue(booleanList.size() > 0);
-        assertEquals(false, booleanList.contains(Boolean.FALSE));
+        assertEquals(true, booleanList.contains(Boolean.FALSE));
     }
 
     @Test
