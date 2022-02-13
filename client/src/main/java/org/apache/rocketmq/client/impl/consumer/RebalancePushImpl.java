@@ -16,9 +16,6 @@
  */
 package org.apache.rocketmq.client.impl.consumer;
 
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import org.apache.rocketmq.client.consumer.AllocateMessageQueueStrategy;
 import org.apache.rocketmq.client.consumer.store.OffsetStore;
 import org.apache.rocketmq.client.consumer.store.ReadOffsetType;
@@ -31,6 +28,10 @@ import org.apache.rocketmq.common.message.MessageQueue;
 import org.apache.rocketmq.common.protocol.heartbeat.ConsumeType;
 import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
 import org.apache.rocketmq.common.protocol.heartbeat.SubscriptionData;
+
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public class RebalancePushImpl extends RebalanceImpl {
     private final static long UNLOCK_DELAY_TIME_MILLS = Long.parseLong(System.getProperty("rocketmq.client.unlockDelayTimeMills", "20000"));
@@ -151,79 +152,60 @@ public class RebalancePushImpl extends RebalanceImpl {
 
     @Override
     public long computePullFromWhereWithException(MessageQueue mq) throws MQClientException {
-        long result = -1;
-        final ConsumeFromWhere consumeFromWhere = this.defaultMQPushConsumerImpl.getDefaultMQPushConsumer().getConsumeFromWhere();
         final OffsetStore offsetStore = this.defaultMQPushConsumerImpl.getOffsetStore();
+        long lastOffset = offsetStore.readOffset(mq, ReadOffsetType.READ_FROM_STORE);
+        if (lastOffset >= 0) {
+            return lastOffset;
+        } else if (-1 == lastOffset) {
+            // First start,no offset
+            return findConsumeFromWhere(mq);
+        } else {
+            return -1;
+        }
+    }
+
+    private long findConsumeFromWhere(MessageQueue mq) throws MQClientException {
+        final ConsumeFromWhere consumeFromWhere = this.defaultMQPushConsumerImpl.getDefaultMQPushConsumer().getConsumeFromWhere();
         switch (consumeFromWhere) {
             case CONSUME_FROM_LAST_OFFSET_AND_FROM_MIN_WHEN_BOOT_FIRST:
             case CONSUME_FROM_MIN_OFFSET:
             case CONSUME_FROM_MAX_OFFSET:
             case CONSUME_FROM_LAST_OFFSET: {
-                long lastOffset = offsetStore.readOffset(mq, ReadOffsetType.READ_FROM_STORE);
-                if (lastOffset >= 0) {
-                    result = lastOffset;
-                }
-                // First start,no offset
-                else if (-1 == lastOffset) {
-                    if (mq.getTopic().startsWith(MixAll.RETRY_GROUP_TOPIC_PREFIX)) {
-                        result = 0L;
-                    } else {
-                        try {
-                            result = this.mQClientFactory.getMQAdminImpl().maxOffset(mq);
-                        } catch (MQClientException e) {
-                            log.warn("Compute consume offset from last offset exception, mq={}, exception={}", mq, e);
-                            throw e;
-                        }
-                    }
+                if (mq.getTopic().startsWith(MixAll.RETRY_GROUP_TOPIC_PREFIX)) {
+                    return 0L;
                 } else {
-                    result = -1;
+                    try {
+                        return this.mQClientFactory.getMQAdminImpl().maxOffset(mq);
+                    } catch (MQClientException e) {
+                        log.warn("Compute consume offset from last offset exception, mq={}, exception={}", mq, e);
+                        throw e;
+                    }
                 }
-                break;
             }
             case CONSUME_FROM_FIRST_OFFSET: {
-                long lastOffset = offsetStore.readOffset(mq, ReadOffsetType.READ_FROM_STORE);
-                if (lastOffset >= 0) {
-                    result = lastOffset;
-                } else if (-1 == lastOffset) {
-                    result = 0L;
-                } else {
-                    result = -1;
-                }
-                break;
+                return 0L;
             }
             case CONSUME_FROM_TIMESTAMP: {
-                long lastOffset = offsetStore.readOffset(mq, ReadOffsetType.READ_FROM_STORE);
-                if (lastOffset >= 0) {
-                    result = lastOffset;
-                } else if (-1 == lastOffset) {
-                    if (mq.getTopic().startsWith(MixAll.RETRY_GROUP_TOPIC_PREFIX)) {
-                        try {
-                            result = this.mQClientFactory.getMQAdminImpl().maxOffset(mq);
-                        } catch (MQClientException e) {
-                            log.warn("Compute consume offset from last offset exception, mq={}, exception={}", mq, e);
-                            throw e;
-                        }
-                    } else {
-                        try {
-                            long timestamp = UtilAll.parseDate(this.defaultMQPushConsumerImpl.getDefaultMQPushConsumer().getConsumeTimestamp(),
-                                UtilAll.YYYYMMDDHHMMSS).getTime();
-                            result = this.mQClientFactory.getMQAdminImpl().searchOffset(mq, timestamp);
-                        } catch (MQClientException e) {
-                            log.warn("Compute consume offset from last offset exception, mq={}, exception={}", mq, e);
-                            throw e;
-                        }
+                if (mq.getTopic().startsWith(MixAll.RETRY_GROUP_TOPIC_PREFIX)) {
+                    try {
+                        return this.mQClientFactory.getMQAdminImpl().maxOffset(mq);
+                    } catch (MQClientException e) {
+                        log.warn("Compute consume offset from last offset exception, mq={}, exception={}", mq, e);
+                        throw e;
                     }
                 } else {
-                    result = -1;
+                    try {
+                        long timestamp = UtilAll.parseDate(this.defaultMQPushConsumerImpl.getDefaultMQPushConsumer().getConsumeTimestamp(),
+                                UtilAll.YYYYMMDDHHMMSS).getTime();
+                        return this.mQClientFactory.getMQAdminImpl().searchOffset(mq, timestamp);
+                    } catch (MQClientException e) {
+                        log.warn("Compute consume offset from last offset exception, mq={}, exception={}", mq, e);
+                        throw e;
+                    }
                 }
-                break;
             }
-
-            default:
-                break;
         }
-
-        return result;
+        return -1L;
     }
 
     @Override

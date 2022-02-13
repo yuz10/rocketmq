@@ -88,69 +88,56 @@ public class RebalanceLitePullImpl extends RebalanceImpl {
 
     @Override
     public long computePullFromWhereWithException(MessageQueue mq) throws MQClientException {
+        long lastOffset = litePullConsumerImpl.getOffsetStore().readOffset(mq, ReadOffsetType.MEMORY_FIRST_THEN_STORE);
+        if (lastOffset >= 0) {
+            return lastOffset;
+        } else if (-1 == lastOffset) {
+            // First start, no offset
+            return findConsumeFromWhere(mq);
+        } else {
+            return -1;
+        }
+    }
+
+    private long findConsumeFromWhere(MessageQueue mq) throws MQClientException {
         ConsumeFromWhere consumeFromWhere = litePullConsumerImpl.getDefaultLitePullConsumer().getConsumeFromWhere();
-        long result = -1;
         switch (consumeFromWhere) {
             case CONSUME_FROM_LAST_OFFSET: {
-                long lastOffset = litePullConsumerImpl.getOffsetStore().readOffset(mq, ReadOffsetType.MEMORY_FIRST_THEN_STORE);
-                if (lastOffset >= 0) {
-                    result = lastOffset;
-                } else if (-1 == lastOffset) {
-                    if (mq.getTopic().startsWith(MixAll.RETRY_GROUP_TOPIC_PREFIX)) { // First start, no offset
-                        result = 0L;
-                    } else {
-                        try {
-                            result = this.mQClientFactory.getMQAdminImpl().maxOffset(mq);
-                        } catch (MQClientException e) {
-                            log.warn("Compute consume offset from last offset exception, mq={}, exception={}", mq, e);
-                            throw e;
-                        }
-                    }
+                if (mq.getTopic().startsWith(MixAll.RETRY_GROUP_TOPIC_PREFIX)) {
+                    return 0L;
                 } else {
-                    result = -1;
+                    try {
+                        return this.mQClientFactory.getMQAdminImpl().maxOffset(mq);
+                    } catch (MQClientException e) {
+                        log.warn("Compute consume offset from last offset exception, mq={}, exception={}", mq, e);
+                        throw e;
+                    }
                 }
-                break;
             }
             case CONSUME_FROM_FIRST_OFFSET: {
-                long lastOffset = litePullConsumerImpl.getOffsetStore().readOffset(mq, ReadOffsetType.MEMORY_FIRST_THEN_STORE);
-                if (lastOffset >= 0) {
-                    result = lastOffset;
-                } else if (-1 == lastOffset) {
-                    result = 0L;
-                } else {
-                    result = -1;
-                }
-                break;
+                return 0L;
             }
             case CONSUME_FROM_TIMESTAMP: {
-                long lastOffset = litePullConsumerImpl.getOffsetStore().readOffset(mq, ReadOffsetType.MEMORY_FIRST_THEN_STORE);
-                if (lastOffset >= 0) {
-                    result = lastOffset;
-                } else if (-1 == lastOffset) {
-                    if (mq.getTopic().startsWith(MixAll.RETRY_GROUP_TOPIC_PREFIX)) {
-                        try {
-                            result = this.mQClientFactory.getMQAdminImpl().maxOffset(mq);
-                        } catch (MQClientException e) {
-                            log.warn("Compute consume offset from last offset exception, mq={}, exception={}", mq, e);
-                            throw e;
-                        }
-                    } else {
-                        try {
-                            long timestamp = UtilAll.parseDate(this.litePullConsumerImpl.getDefaultLitePullConsumer().getConsumeTimestamp(),
-                                UtilAll.YYYYMMDDHHMMSS).getTime();
-                            result = this.mQClientFactory.getMQAdminImpl().searchOffset(mq, timestamp);
-                        } catch (MQClientException e) {
-                            log.warn("Compute consume offset from last offset exception, mq={}, exception={}", mq, e);
-                            throw e;
-                        }
+                if (mq.getTopic().startsWith(MixAll.RETRY_GROUP_TOPIC_PREFIX)) {
+                    try {
+                        return this.mQClientFactory.getMQAdminImpl().maxOffset(mq);
+                    } catch (MQClientException e) {
+                        log.warn("Compute consume offset from last offset exception, mq={}, exception={}", mq, e);
+                        throw e;
                     }
                 } else {
-                    result = -1;
+                    try {
+                        long timestamp = UtilAll.parseDate(this.litePullConsumerImpl.getDefaultLitePullConsumer().getConsumeTimestamp(),
+                                UtilAll.YYYYMMDDHHMMSS).getTime();
+                        return this.mQClientFactory.getMQAdminImpl().searchOffset(mq, timestamp);
+                    } catch (MQClientException e) {
+                        log.warn("Compute consume offset from last offset exception, mq={}, exception={}", mq, e);
+                        throw e;
+                    }
                 }
-                break;
             }
         }
-        return result;
+        return -1;
     }
 
     @Override
