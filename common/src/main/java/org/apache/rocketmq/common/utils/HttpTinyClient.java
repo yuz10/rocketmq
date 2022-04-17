@@ -22,10 +22,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.rocketmq.common.MQVersion;
-import org.apache.rocketmq.common.MixAll;
 
 public class HttpTinyClient {
 
@@ -106,7 +106,7 @@ public class HttpTinyClient {
             conn.setDoInput(true);
             setHeaders(conn, headers, encoding);
 
-            conn.getOutputStream().write(encodedContent.getBytes(MixAll.DEFAULT_CHARSET));
+            conn.getOutputStream().write(encodedContent.getBytes(StandardCharsets.UTF_8));
 
             int respCode = conn.getResponseCode();
             String resp = null;

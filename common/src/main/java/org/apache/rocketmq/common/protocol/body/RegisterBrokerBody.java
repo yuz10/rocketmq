@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,6 @@ import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 import org.apache.rocketmq.common.DataVersion;
-import org.apache.rocketmq.common.MixAll;
 import org.apache.rocketmq.common.TopicConfig;
 import org.apache.rocketmq.common.constant.LoggerName;
 import org.apache.rocketmq.logging.InternalLogger;
@@ -69,12 +69,12 @@ public class RegisterBrokerBody extends RemotingSerializable {
 
             // write topic config entry one by one.
             for (ConcurrentMap.Entry<String, TopicConfig> next : topicConfigTable.entrySet()) {
-                buffer = next.getValue().encode().getBytes(MixAll.DEFAULT_CHARSET);
+                buffer = next.getValue().encode().getBytes(StandardCharsets.UTF_8);
                 outputStream.write(convertIntToByteArray(buffer.length));
                 outputStream.write(buffer);
             }
 
-            buffer = JSON.toJSONString(filterServerList).getBytes(MixAll.DEFAULT_CHARSET);
+            buffer = JSON.toJSONString(filterServerList).getBytes(StandardCharsets.UTF_8);
 
             // write filter server list json length
             outputStream.write(convertIntToByteArray(buffer.length));
@@ -117,7 +117,7 @@ public class RegisterBrokerBody extends RemotingSerializable {
 
             byte[] buffer = readBytes(inflaterInputStream, topicConfigJsonLength);
             TopicConfig topicConfig = new TopicConfig();
-            String topicConfigJson = new String(buffer, MixAll.DEFAULT_CHARSET);
+            String topicConfigJson = new String(buffer, StandardCharsets.UTF_8);
             topicConfig.decode(topicConfigJson);
             topicConfigTable.put(topicConfig.getTopicName(), topicConfig);
         }
@@ -125,7 +125,7 @@ public class RegisterBrokerBody extends RemotingSerializable {
         int filterServerListJsonLength = readInt(inflaterInputStream);
 
         byte[] filterServerListBuffer = readBytes(inflaterInputStream, filterServerListJsonLength);
-        String filterServerListJson = new String(filterServerListBuffer, MixAll.DEFAULT_CHARSET);
+        String filterServerListJson = new String(filterServerListBuffer, StandardCharsets.UTF_8);
         List<String> filterServerList = new ArrayList<String>();
         try {
             filterServerList = JSON.parseArray(filterServerListJson, String.class);

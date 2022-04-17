@@ -30,9 +30,8 @@ import org.apache.rocketmq.client.trace.hook.EndTransactionOpenTracingHookImpl;
 import org.apache.rocketmq.client.trace.hook.SendMessageOpenTracingHookImpl;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageExt;
-import org.apache.rocketmq.remoting.common.RemotingHelper;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 public class OpenTracingTransactionProducer {
     public static void main(String[] args) throws MQClientException, InterruptedException {
@@ -57,10 +56,10 @@ public class OpenTracingTransactionProducer {
 
         try {
             Message msg = new Message("TopicTest", "Tag", "KEY",
-                    "Hello RocketMQ".getBytes(RemotingHelper.DEFAULT_CHARSET));
+                    "Hello RocketMQ".getBytes(StandardCharsets.UTF_8));
             SendResult sendResult = producer.sendMessageInTransaction(msg, null);
             System.out.printf("%s%n", sendResult);
-        } catch (MQClientException | UnsupportedEncodingException e) {
+        } catch (MQClientException e) {
             e.printStackTrace();
         }
 

@@ -17,7 +17,7 @@
 package org.apache.rocketmq.namesrv.processor;
 
 import io.netty.channel.ChannelHandlerContext;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 import org.apache.rocketmq.common.DataVersion;
@@ -548,14 +548,7 @@ public class DefaultRequestProcessor extends AsyncNettyRequestProcessor implemen
         byte[] body = request.getBody();
         if (body != null) {
             String bodyStr;
-            try {
-                bodyStr = new String(body, MixAll.DEFAULT_CHARSET);
-            } catch (UnsupportedEncodingException e) {
-                log.error("updateConfig byte array to string error: ", e);
-                response.setCode(ResponseCode.SYSTEM_ERROR);
-                response.setRemark("UnsupportedEncodingException " + e);
-                return response;
-            }
+            bodyStr = new String(body, StandardCharsets.UTF_8);
 
             Properties properties = MixAll.string2Properties(bodyStr);
             if (properties == null) {
@@ -578,14 +571,7 @@ public class DefaultRequestProcessor extends AsyncNettyRequestProcessor implemen
 
         String content = this.namesrvController.getConfiguration().getAllConfigsFormatString();
         if (content != null && content.length() > 0) {
-            try {
-                response.setBody(content.getBytes(MixAll.DEFAULT_CHARSET));
-            } catch (UnsupportedEncodingException e) {
-                log.error("getConfig error, ", e);
-                response.setCode(ResponseCode.SYSTEM_ERROR);
-                response.setRemark("UnsupportedEncodingException " + e);
-                return response;
-            }
+            response.setBody(content.getBytes(StandardCharsets.UTF_8));
         }
 
         response.setCode(ResponseCode.SUCCESS);

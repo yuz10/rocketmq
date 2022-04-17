@@ -17,6 +17,7 @@
 package org.apache.rocketmq.client.impl.factory;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -753,7 +754,7 @@ public class MQClientInstance {
         byte[] classBody = null;
         int classCRC = 0;
         try {
-            classBody = filterClassSource.getBytes(MixAll.DEFAULT_CHARSET);
+            classBody = filterClassSource.getBytes(StandardCharsets.UTF_8);
             classCRC = UtilAll.crc32(classBody);
         } catch (Exception e1) {
             log.warn("uploadFilterClassToAllFilterServer Exception, ClassName: {} {}",

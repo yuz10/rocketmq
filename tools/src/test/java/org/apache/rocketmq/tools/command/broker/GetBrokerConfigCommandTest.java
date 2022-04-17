@@ -25,7 +25,7 @@ import org.apache.rocketmq.tools.command.SubCommandException;
 import org.apache.rocketmq.tools.command.server.ServerResponseMocker;
 import org.junit.Test;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 
@@ -46,11 +46,7 @@ public class GetBrokerConfigCommandTest extends ServerResponseMocker {
         properties.setProperty("ip", "192.168.1.1");
         properties.setProperty("broker_name", "broker_101");
         sb.append(MixAll.properties2String(properties));
-        try {
-            return sb.toString().getBytes(MixAll.DEFAULT_CHARSET);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        return sb.toString().getBytes(StandardCharsets.UTF_8);
     }
 
     @Test

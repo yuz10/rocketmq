@@ -279,7 +279,7 @@ public class MixAll {
     public static Properties string2Properties(final String str) {
         Properties properties = new Properties();
         try {
-            InputStream in = new ByteArrayInputStream(str.getBytes(DEFAULT_CHARSET));
+            InputStream in = new ByteArrayInputStream(str.getBytes(StandardCharsets.UTF_8));
             properties.load(in);
         } catch (Exception e) {
             log.error("Failed to handle properties", e);

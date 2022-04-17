@@ -29,14 +29,15 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.rocketmq.remoting.common.RemotingHelper;
 
 public class IOTinyUtils {
 
     static public String toString(InputStream input, String encoding) throws IOException {
-        return (null == encoding) ? toString(new InputStreamReader(input, RemotingHelper.DEFAULT_CHARSET)) : toString(new InputStreamReader(
+        return (null == encoding) ? toString(new InputStreamReader(input, StandardCharsets.UTF_8)) : toString(new InputStreamReader(
             input, encoding));
     }
 
@@ -144,7 +145,7 @@ public class IOTinyUtils {
         }
     }
 
-    public static void writeStringToFile(File file, String data, String encoding) throws IOException {
+    public static void writeStringToFile(File file, String data, Charset encoding) throws IOException {
         OutputStream os = null;
         try {
             os = new FileOutputStream(file);

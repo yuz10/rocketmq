@@ -16,13 +16,13 @@
  */
 package org.apache.rocketmq.tools.command.message;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.MessageQueueSelector;
-import org.apache.rocketmq.common.MixAll;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageQueue;
 import org.apache.rocketmq.remoting.RPCHook;
@@ -75,7 +75,7 @@ public class CheckMsgSendRTCommand implements SubCommand {
                 .getOptionValue('a').trim());
             long msgSize = !commandLine.hasOption('s') ? 128 : Long.parseLong(commandLine
                 .getOptionValue('s').trim());
-            Message msg = new Message(topic, getStringBySize(msgSize).getBytes(MixAll.DEFAULT_CHARSET));
+            Message msg = new Message(topic, getStringBySize(msgSize).getBytes(StandardCharsets.UTF_8));
 
             System.out.printf("%-32s  %-4s  %-20s    %s%n",
                 "#Broker Name",

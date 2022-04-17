@@ -127,8 +127,8 @@ import org.apache.rocketmq.store.PutMessageResult;
 import org.apache.rocketmq.store.PutMessageStatus;
 import org.apache.rocketmq.store.SelectMappedBufferResult;
 
-import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -480,15 +480,7 @@ public class AdminBrokerProcessor extends AsyncNettyRequestProcessor implements 
 
         String content = this.brokerController.getTopicConfigManager().encode();
         if (content != null && content.length() > 0) {
-            try {
-                response.setBody(content.getBytes(MixAll.DEFAULT_CHARSET));
-            } catch (UnsupportedEncodingException e) {
-                log.error("", e);
-
-                response.setCode(ResponseCode.SYSTEM_ERROR);
-                response.setRemark("UnsupportedEncodingException " + e);
-                return response;
-            }
+            response.setBody(content.getBytes(StandardCharsets.UTF_8));
         } else {
             log.error("No topic in this broker, client: {}", ctx.channel().remoteAddress());
             response.setCode(ResponseCode.SYSTEM_ERROR);
@@ -509,26 +501,19 @@ public class AdminBrokerProcessor extends AsyncNettyRequestProcessor implements 
 
         byte[] body = request.getBody();
         if (body != null) {
-            try {
-                String bodyStr = new String(body, MixAll.DEFAULT_CHARSET);
-                Properties properties = MixAll.string2Properties(bodyStr);
-                if (properties != null) {
-                    log.info("updateBrokerConfig, new config: [{}] client: {} ", properties, ctx.channel().remoteAddress());
-                    this.brokerController.getConfiguration().update(properties);
-                    if (properties.containsKey("brokerPermission")) {
-                        this.brokerController.getTopicConfigManager().getDataVersion().nextVersion();
-                        this.brokerController.registerBrokerAll(false, false, true);
-                    }
-                } else {
-                    log.error("string2Properties error");
-                    response.setCode(ResponseCode.SYSTEM_ERROR);
-                    response.setRemark("string2Properties error");
-                    return response;
+            String bodyStr = new String(body, StandardCharsets.UTF_8);
+            Properties properties = MixAll.string2Properties(bodyStr);
+            if (properties != null) {
+                log.info("updateBrokerConfig, new config: [{}] client: {} ", properties, ctx.channel().remoteAddress());
+                this.brokerController.getConfiguration().update(properties);
+                if (properties.containsKey("brokerPermission")) {
+                    this.brokerController.getTopicConfigManager().getDataVersion().nextVersion();
+                    this.brokerController.registerBrokerAll(false, false, true);
                 }
-            } catch (UnsupportedEncodingException e) {
-                log.error("", e);
+            } else {
+                log.error("string2Properties error");
                 response.setCode(ResponseCode.SYSTEM_ERROR);
-                response.setRemark("UnsupportedEncodingException " + e);
+                response.setRemark("string2Properties error");
                 return response;
             }
         }
@@ -545,15 +530,7 @@ public class AdminBrokerProcessor extends AsyncNettyRequestProcessor implements 
 
         String content = this.brokerController.getConfiguration().getAllConfigsFormatString();
         if (content != null && content.length() > 0) {
-            try {
-                response.setBody(content.getBytes(MixAll.DEFAULT_CHARSET));
-            } catch (UnsupportedEncodingException e) {
-                log.error("", e);
-
-                response.setCode(ResponseCode.SYSTEM_ERROR);
-                response.setRemark("UnsupportedEncodingException " + e);
-                return response;
-            }
+            response.setBody(content.getBytes(StandardCharsets.UTF_8));
         }
 
         responseHeader.setVersion(this.brokerController.getConfiguration().getDataVersionJson());
@@ -696,15 +673,7 @@ public class AdminBrokerProcessor extends AsyncNettyRequestProcessor implements 
         final RemotingCommand response = RemotingCommand.createResponseCommand(null);
         String content = this.brokerController.getSubscriptionGroupManager().encode();
         if (content != null && content.length() > 0) {
-            try {
-                response.setBody(content.getBytes(MixAll.DEFAULT_CHARSET));
-            } catch (UnsupportedEncodingException e) {
-                log.error("", e);
-
-                response.setCode(ResponseCode.SYSTEM_ERROR);
-                response.setRemark("UnsupportedEncodingException " + e);
-                return response;
-            }
+            response.setBody(content.getBytes(StandardCharsets.UTF_8));
         } else {
             log.error("No subscription group in this broker, client:{} ", ctx.channel().remoteAddress());
             response.setCode(ResponseCode.SYSTEM_ERROR);
@@ -947,15 +916,7 @@ public class AdminBrokerProcessor extends AsyncNettyRequestProcessor implements 
 
         String content = this.brokerController.getConsumerOffsetManager().encode();
         if (content != null && content.length() > 0) {
-            try {
-                response.setBody(content.getBytes(MixAll.DEFAULT_CHARSET));
-            } catch (UnsupportedEncodingException e) {
-                log.error("get all consumer offset from master error.", e);
-
-                response.setCode(ResponseCode.SYSTEM_ERROR);
-                response.setRemark("UnsupportedEncodingException " + e);
-                return response;
-            }
+            response.setBody(content.getBytes(StandardCharsets.UTF_8));
         } else {
             log.error("No consumer offset in this broker, client: {} ", ctx.channel().remoteAddress());
             response.setCode(ResponseCode.SYSTEM_ERROR);
@@ -981,15 +942,7 @@ public class AdminBrokerProcessor extends AsyncNettyRequestProcessor implements 
 
         String content = ((DefaultMessageStore) this.brokerController.getMessageStore()).getScheduleMessageService().encode();
         if (content != null && content.length() > 0) {
-            try {
-                response.setBody(content.getBytes(MixAll.DEFAULT_CHARSET));
-            } catch (UnsupportedEncodingException e) {
-                log.error("Get all delay offset from master error.", e);
-
-                response.setCode(ResponseCode.SYSTEM_ERROR);
-                response.setRemark("UnsupportedEncodingException " + e);
-                return response;
-            }
+            response.setBody(content.getBytes(StandardCharsets.UTF_8));
         } else {
             log.error("No delay offset in this broker, client: {} ", ctx.channel().remoteAddress());
             response.setCode(ResponseCode.SYSTEM_ERROR);

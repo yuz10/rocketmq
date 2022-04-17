@@ -26,7 +26,8 @@ import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.client.trace.hook.SendMessageOpenTracingHookImpl;
 import org.apache.rocketmq.common.message.Message;
-import org.apache.rocketmq.remoting.common.RemotingHelper;
+
+import java.nio.charset.StandardCharsets;
 
 public class OpenTracingProducer {
     public static void main(String[] args) throws MQClientException {
@@ -41,7 +42,7 @@ public class OpenTracingProducer {
             Message msg = new Message("TopicTest",
                     "TagA",
                     "OrderID188",
-                    "Hello world".getBytes(RemotingHelper.DEFAULT_CHARSET));
+                    "Hello world".getBytes(StandardCharsets.UTF_8));
             SendResult sendResult = producer.send(msg);
             System.out.printf("%s%n", sendResult);
 

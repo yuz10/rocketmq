@@ -17,6 +17,7 @@
 package org.apache.rocketmq.broker.out;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -365,7 +366,7 @@ public class BrokerOuterAPI {
         assert response != null;
         switch (response.getCode()) {
             case ResponseCode.SUCCESS: {
-                return new String(response.getBody(), MixAll.DEFAULT_CHARSET);
+                return new String(response.getBody(), StandardCharsets.UTF_8);
             }
             default:
                 break;

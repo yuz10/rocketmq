@@ -17,12 +17,13 @@
 package org.apache.rocketmq.tools.command.broker;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendResult;
-import org.apache.rocketmq.common.MixAll;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.remoting.RPCHook;
 import org.apache.rocketmq.tools.command.SubCommand;
@@ -38,7 +39,7 @@ public class SendMsgStatusCommand implements SubCommand {
         for (int i = 0; i < messageSize; i += 11) {
             sb.append("hello jodie");
         }
-        msg.setBody(sb.toString().getBytes(MixAll.DEFAULT_CHARSET));
+        msg.setBody(sb.toString().getBytes(StandardCharsets.UTF_8));
         return msg;
     }
 

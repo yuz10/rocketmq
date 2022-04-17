@@ -18,6 +18,7 @@ package org.apache.rocketmq.client.impl;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1305,7 +1306,7 @@ public class MQClientAPIImpl {
 
         String str = MixAll.properties2String(properties);
         if (str != null && str.length() > 0) {
-            request.setBody(str.getBytes(MixAll.DEFAULT_CHARSET));
+            request.setBody(str.getBytes(StandardCharsets.UTF_8));
             RemotingCommand response = this.remotingClient
                 .invokeSync(MixAll.brokerVIPChannel(this.clientConfig.isVipChannelEnabled(), addr), request, timeoutMillis);
             switch (response.getCode()) {
@@ -1329,7 +1330,7 @@ public class MQClientAPIImpl {
         assert response != null;
         switch (response.getCode()) {
             case ResponseCode.SUCCESS: {
-                return MixAll.string2Properties(new String(response.getBody(), MixAll.DEFAULT_CHARSET));
+                return MixAll.string2Properties(new String(response.getBody(), StandardCharsets.UTF_8));
             }
             default:
                 break;
@@ -2184,7 +2185,7 @@ public class MQClientAPIImpl {
         }
 
         RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.UPDATE_NAMESRV_CONFIG, null);
-        request.setBody(str.getBytes(MixAll.DEFAULT_CHARSET));
+        request.setBody(str.getBytes(StandardCharsets.UTF_8));
 
         RemotingCommand errResponse = null;
         for (String nameServer : invokeNameServers) {
@@ -2223,7 +2224,7 @@ public class MQClientAPIImpl {
             assert response != null;
 
             if (ResponseCode.SUCCESS == response.getCode()) {
-                configMap.put(nameServer, MixAll.string2Properties(new String(response.getBody(), MixAll.DEFAULT_CHARSET)));
+                configMap.put(nameServer, MixAll.string2Properties(new String(response.getBody(), StandardCharsets.UTF_8)));
             } else {
                 throw new MQClientException(response.getCode(), response.getRemark());
             }
