@@ -108,7 +108,7 @@ public abstract class AbstractSendMessageProcessor extends AsyncNettyRequestProc
         final SendMessageRequestHeader requestHeader, final byte[] body, TopicConfig topicConfig) {
         int queueIdInt = requestHeader.getQueueId();
         if (queueIdInt < 0) {
-            queueIdInt = ThreadLocalRandom.current().nextInt(99999999) % topicConfig.getWriteQueueNums();
+            queueIdInt = ThreadLocalRandom.current().nextInt(topicConfig.getWriteQueueNums());
         }
         int sysFlag = requestHeader.getSysFlag();
 

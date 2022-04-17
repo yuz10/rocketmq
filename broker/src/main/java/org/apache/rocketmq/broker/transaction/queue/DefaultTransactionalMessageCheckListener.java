@@ -60,7 +60,7 @@ public class DefaultTransactionalMessageCheckListener extends AbstractTransactio
 
     private MessageExtBrokerInner toMessageExtBrokerInner(MessageExt msgExt) {
         TopicConfig topicConfig = this.getBrokerController().getTopicConfigManager().createTopicOfTranCheckMaxTime(TCMT_QUEUE_NUMS, PermName.PERM_READ | PermName.PERM_WRITE);
-        int queueId = ThreadLocalRandom.current().nextInt(99999999) % TCMT_QUEUE_NUMS;
+        int queueId = ThreadLocalRandom.current().nextInt(TCMT_QUEUE_NUMS);
         MessageExtBrokerInner inner = new MessageExtBrokerInner();
         inner.setTopic(topicConfig.getTopicName());
         inner.setBody(msgExt.getBody());

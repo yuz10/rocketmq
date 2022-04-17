@@ -145,7 +145,7 @@ public class SendMessageProcessor extends AbstractSendMessageProcessor implement
         }
 
         String newTopic = MixAll.getRetryTopic(requestHeader.getGroup());
-        int queueIdInt = ThreadLocalRandom.current().nextInt(99999999) % subscriptionGroupConfig.getRetryQueueNums();
+        int queueIdInt = ThreadLocalRandom.current().nextInt(subscriptionGroupConfig.getRetryQueueNums());
         int topicSysFlag = 0;
         if (requestHeader.isUnitMode()) {
             topicSysFlag = TopicSysFlag.buildSysFlag(false, true);
@@ -192,7 +192,7 @@ public class SendMessageProcessor extends AbstractSendMessageProcessor implement
         if (msgExt.getReconsumeTimes() >= maxReconsumeTimes
             || delayLevel < 0) {
             newTopic = MixAll.getDLQTopic(requestHeader.getGroup());
-            queueIdInt = ThreadLocalRandom.current().nextInt(99999999) % DLQ_NUMS_PER_GROUP;
+            queueIdInt = ThreadLocalRandom.current().nextInt(DLQ_NUMS_PER_GROUP);
 
             topicConfig = this.brokerController.getTopicConfigManager().createTopicInSendMessageBackMethod(newTopic,
                     DLQ_NUMS_PER_GROUP,
@@ -364,7 +364,7 @@ public class SendMessageProcessor extends AbstractSendMessageProcessor implement
             int reconsumeTimes = requestHeader.getReconsumeTimes() == null ? 0 : requestHeader.getReconsumeTimes();
             if (reconsumeTimes >= maxReconsumeTimes) {
                 newTopic = MixAll.getDLQTopic(groupName);
-                int queueIdInt = ThreadLocalRandom.current().nextInt(99999999) % DLQ_NUMS_PER_GROUP;
+                int queueIdInt = ThreadLocalRandom.current().nextInt(DLQ_NUMS_PER_GROUP);
                 topicConfig = this.brokerController.getTopicConfigManager().createTopicInSendMessageBackMethod(newTopic,
                     DLQ_NUMS_PER_GROUP,
                     PermName.PERM_WRITE | PermName.PERM_READ, 0
@@ -613,7 +613,7 @@ public class SendMessageProcessor extends AbstractSendMessageProcessor implement
     }
 
     private int randomQueueId(int writeQueueNums) {
-        return ThreadLocalRandom.current().nextInt(99999999) % writeQueueNums;
+        return ThreadLocalRandom.current().nextInt(writeQueueNums);
     }
 
     private RemotingCommand preSend(ChannelHandlerContext ctx, RemotingCommand request,

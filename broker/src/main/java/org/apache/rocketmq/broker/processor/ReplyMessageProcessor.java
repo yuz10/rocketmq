@@ -128,7 +128,7 @@ public class ReplyMessageProcessor extends AbstractSendMessageProcessor implemen
         TopicConfig topicConfig = this.brokerController.getTopicConfigManager().selectTopicConfig(requestHeader.getTopic());
 
         if (queueIdInt < 0) {
-            queueIdInt = ThreadLocalRandom.current().nextInt(99999999) % topicConfig.getWriteQueueNums();
+            queueIdInt = ThreadLocalRandom.current().nextInt(topicConfig.getWriteQueueNums());
         }
 
         MessageExtBrokerInner msgInner = new MessageExtBrokerInner();
