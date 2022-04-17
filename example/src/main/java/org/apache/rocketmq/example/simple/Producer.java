@@ -29,20 +29,19 @@ public class Producer {
         DefaultMQProducer producer = new DefaultMQProducer("ProducerGroupName");
         producer.start();
 
-        for (int i = 0; i < 128; i++)
+        for (int i = 0; i < 128; i++) {
             try {
-                {
-                    Message msg = new Message("TopicTest",
-                        "TagA",
-                        "OrderID188",
-                        "Hello world".getBytes(StandardCharsets.UTF_8));
-                    SendResult sendResult = producer.send(msg);
-                    System.out.printf("%s%n", sendResult);
-                }
+                Message msg = new Message("TopicTest",
+                    "TagA",
+                    "OrderID188",
+                    "Hello world".getBytes(StandardCharsets.UTF_8));
+                SendResult sendResult = producer.send(msg);
+                System.out.printf("%s%n", sendResult);
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
 
         producer.shutdown();
     }

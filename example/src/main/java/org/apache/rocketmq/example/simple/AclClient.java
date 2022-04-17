@@ -60,20 +60,19 @@ public class AclClient {
         producer.setNamesrvAddr("127.0.0.1:9876");
         producer.start();
 
-        for (int i = 0; i < 128; i++)
+        for (int i = 0; i < 128; i++) {
             try {
-                {
-                    Message msg = new Message("TopicTest",
-                        "TagA",
-                        "OrderID188",
-                        "Hello world".getBytes(StandardCharsets.UTF_8));
-                    SendResult sendResult = producer.send(msg);
-                    System.out.printf("%s%n", sendResult);
-                }
+                Message msg = new Message("TopicTest",
+                    "TagA",
+                    "OrderID188",
+                    "Hello world".getBytes(StandardCharsets.UTF_8));
+                SendResult sendResult = producer.send(msg);
+                System.out.printf("%s%n", sendResult);
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
 
         producer.shutdown();
     }
@@ -163,6 +162,6 @@ public class AclClient {
     }
 
     static RPCHook getAclRPCHook() {
-        return new AclClientRPCHook(new SessionCredentials(ACL_ACCESS_KEY,ACL_SECRET_KEY));
+        return new AclClientRPCHook(new SessionCredentials(ACL_ACCESS_KEY, ACL_SECRET_KEY));
     }
 }
