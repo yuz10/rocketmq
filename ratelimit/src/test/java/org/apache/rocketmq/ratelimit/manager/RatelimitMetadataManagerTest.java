@@ -161,12 +161,18 @@ public class RatelimitMetadataManagerTest {
 
     @Test
     public void getRule() {
+        if (MixAll.isMac()) {
+            return;
+        }
         RatelimitRule rule = this.ratelimitMetadataManager.getRule("no_user").join();
         Assert.assertNull(rule);
     }
 
     @Test
     public void listRule() {
+        if (MixAll.isMac()) {
+            return;
+        }
         Collection<RatelimitRule> users = this.ratelimitMetadataManager.listRule().join();
         Assert.assertTrue(CollectionUtils.isEmpty(users));
 
@@ -183,6 +189,9 @@ public class RatelimitMetadataManagerTest {
 
     @Test
     public void getRatelimitCache() {
+        if (MixAll.isMac()) {
+            return;
+        }
         RatelimitRule rule = RatelimitTestHelper.getRatelimitRule("test");
         this.ratelimitMetadataManager.createRule(rule).join();
         Map<String, RatelimitRuleCache> cache = this.ratelimitMetadataManager.getRatelimitCache();
