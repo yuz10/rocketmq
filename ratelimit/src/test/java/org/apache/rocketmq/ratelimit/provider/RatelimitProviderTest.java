@@ -22,7 +22,6 @@ import io.netty.channel.ChannelId;
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
 import org.apache.rocketmq.ratelimit.context.RatelimitContext;
-import org.apache.rocketmq.ratelimit.helper.RatelimitTestHelper;
 import org.apache.rocketmq.remoting.netty.AttributeKeys;
 import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 import org.apache.rocketmq.remoting.protocol.RequestCode;
@@ -30,7 +29,6 @@ import org.apache.rocketmq.remoting.protocol.header.PullMessageRequestHeader;
 import org.apache.rocketmq.remoting.protocol.header.SendMessageRequestHeader;
 import org.apache.rocketmq.remoting.protocol.header.SendMessageRequestHeaderV2;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -48,11 +46,6 @@ public class RatelimitProviderTest {
     private Channel channel;
 
     RatelimitProvider provider = new DefaultRatelimitProvider();
-
-    @Before
-    public void setUp() throws Exception {
-        provider.initialize(RatelimitTestHelper.createDefaultConfig());
-    }
 
     @Test
     public void newContext() {
