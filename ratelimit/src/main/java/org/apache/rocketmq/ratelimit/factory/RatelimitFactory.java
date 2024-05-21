@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.ratelimit.manager.RatelimitMetadataManager;
 import org.apache.rocketmq.ratelimit.manager.RatelimitMetadataManagerImpl;
@@ -102,5 +104,10 @@ public class RatelimitFactory {
             }
         }
         return result != null ? (V) result : null;
+    }
+    
+    @VisibleForTesting
+    public static void clear() {
+        INSTANCE_MAP.clear();
     }
 }

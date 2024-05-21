@@ -49,6 +49,7 @@ public class RatelimitMetadataManagerTest {
             return;
         }
         this.ratelimitConfig = RatelimitTestHelper.createDefaultConfig();
+        RatelimitFactory.clear();
         this.ratelimitMetadataManager = RatelimitFactory.getMetadataManager(this.ratelimitConfig);
         this.clearAllRatelimitRules();
     }
