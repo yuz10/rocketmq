@@ -50,7 +50,7 @@ public class RatelimitFactory {
                 }
                 return (RatelimitProvider) clazz.getDeclaredConstructor().newInstance();
             } catch (Exception e) {
-                throw new RuntimeException("Failed to load the authentication provider.", e);
+                throw new RuntimeException("Failed to load the ratelimit provider.", e);
             }
         });
     }
@@ -79,7 +79,7 @@ public class RatelimitFactory {
                 result.initialize(config, metadataService);
                 return result;
             } catch (Exception e) {
-                throw new RuntimeException("Failed to load the authentication metadata provider", e);
+                throw new RuntimeException("Failed to load the ratelimit metadata provider", e);
             }
         });
     }
