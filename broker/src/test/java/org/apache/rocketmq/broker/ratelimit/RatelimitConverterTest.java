@@ -20,13 +20,13 @@ import org.apache.rocketmq.ratelimit.model.EntityType;
 import org.apache.rocketmq.ratelimit.model.MatcherType;
 import org.apache.rocketmq.ratelimit.model.RatelimitRule;
 import org.apache.rocketmq.remoting.protocol.body.RatelimitInfo;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.Assert.assertNotNull;
 
 public class RatelimitConverterTest {
 
