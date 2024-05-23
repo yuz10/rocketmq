@@ -51,7 +51,7 @@ public class RatelimitPipeline implements RequestPipeline {
 
     @Override
     public void execute(ChannelHandlerContext ctx, RemotingCommand request) {
-        if (!ratelimitConfig.isRatelimitEnabled()) {
+        if (ratelimitConfig != null && !ratelimitConfig.isRatelimitEnabled()) {
             return;
         }
         RatelimitContext context;
@@ -91,7 +91,7 @@ public class RatelimitPipeline implements RequestPipeline {
     public void executeResponse(ChannelHandlerContext ctx, RemotingCommand request,
 
                                 RemotingCommand response) {
-        if (!ratelimitConfig.isRatelimitEnabled()) {
+        if (ratelimitConfig != null && !ratelimitConfig.isRatelimitEnabled()) {
             return;
         }
         switch (request.getCode()) {
