@@ -1060,7 +1060,10 @@ public class BrokerController {
         // the last pipe add will execute at the first
         // the execute order of a.pipe(b):
         // b.execute -> a.execute -> processRequest -> a.executeResponse -> b.executeResponse
-        RequestPipeline pipeline = new RatelimitPipeline(ratelimitConfig, brokerStatsManager);
+        RequestPipeline pipeline = RequestPipeline.EMPTY;
+        if (ratelimitConfig != null) {
+            pipeline = pipeline.pipe(new RatelimitPipeline(ratelimitConfig, brokerStatsManager));
+        }
         if (this.authConfig != null) {
             try {
                 pipeline = pipeline.pipe(new AuthorizationPipeline(authConfig))
