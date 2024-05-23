@@ -22,6 +22,12 @@ import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 
 public interface RequestPipeline {
 
+    RequestPipeline EMPTY = new RequestPipeline() {
+        @Override
+        public void execute(ChannelHandlerContext ctx, RemotingCommand request) throws Exception {
+        }
+    };
+
     void execute(ChannelHandlerContext ctx, RemotingCommand request) throws Exception;
 
     default void executeResponse(ChannelHandlerContext ctx, RemotingCommand request, RemotingCommand response) throws Exception {
