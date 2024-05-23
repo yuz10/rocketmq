@@ -32,7 +32,7 @@ public class RatelimitConverterTest {
 
 
     @Test
-    void testConvertRatelimit() {
+    public void testConvertRatelimit() {
         RatelimitInfo ratelimitInfo = new RatelimitInfo("ratelimit1", EntityType.TOPIC.name(), "topic1", MatcherType.IN.getName(), 10, 20);
         RatelimitRule ratelimitRule = RatelimitConverter.convertRatelimit(ratelimitInfo);
         assertNotNull(ratelimitRule);
@@ -45,7 +45,7 @@ public class RatelimitConverterTest {
     }
 
     @Test
-    void testConvertRatelimit2() {
+    public void testConvertRatelimit2() {
         RatelimitRule rule = new RatelimitRule();
         rule.setName("ratelimit1");
         rule.setEntityType(EntityType.TOPIC);
